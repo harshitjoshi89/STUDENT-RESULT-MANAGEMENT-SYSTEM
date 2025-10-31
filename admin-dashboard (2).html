@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!-- Thymeleaf aur Spring Security ko add kiya -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Tailwind CSS (Professional Look ke liye) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Body ke liye Inter font set kiya */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar (optional, but looks professional) */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+    </style>
+    <!-- Inter font ko Google Fonts se import kiya -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-800 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 class="text-2xl font-bold">SRMS Admin Portal</h1>
+            <!-- Logout Form -->
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                    <!-- Spring Security se login kiye hue user ka naam dikhaya -->
+                    Logout (<span sec:authentication="name">Admin</span>)
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="container mx-auto mt-10 p-4">
+        
+        <h2 class="text-3xl font-semibold mb-6 text-gray-800">Admin Dashboard</h2>
+
+        <!-- === NAYA HISSA: SUCCESS MESSAGE === -->
+        <!-- Controller se bheja gaya 'successMessage' yahan dikhega -->
+        <div th:if="${successMessage}" 
+             class="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-lg mb-6 shadow-md" 
+             role="alert">
+            <strong class="font-bold">Success!</strong>
+            <!-- 'whitespace-pre-wrap' zaroori hai taaki error list mein new lines (\n) kaam karein -->
+            <p class="mt-1 whitespace-pre-wrap" th:text="${successMessage}"></p>
+        </div>
+
+        <!-- === NAYA HISSA: ERROR MESSAGE === -->
+        <!-- Controller se bheja gaya 'errorMessage' yahan dikhega -->
+        <div th:if="${errorMessage}" 
+             class="bg-red-100 border-l-4 border-red-500 text-red-800 p-4 rounded-lg mb-6 shadow-md" 
+             role="alert">
+            <strong class="font-bold">Error!</strong>
+            <p class="mt-1 whitespace-pre-wrap" th:text="${errorMessage}"></p>
+        </div>
+
+        <!-- Bulk Student Upload Card -->
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
+            <h3 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-3">Bulk Student Upload</h3>
+            
+            <!-- === UPDATE KIYA GAYA FORM === -->
+            <!-- 
+                1. th:action - Naye controller API ko point karega
+                2. enctype - File upload ke liye zaroori hai
+            -->
+            <form th:action="@{/admin/upload-students}" method="post" enctype="multipart/form-data">
+                
+                <p class="text-base text-gray-600 mb-4">Upload an Excel file (.xlsx) with new student details. Marks columns will be ignored and set to 0.</p>
+                <p class="text-sm font-medium text-gray-700 mb-5">
+                    <span class="font-bold">Required Format:</span> 
+                    <code class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md">Rollno</code> | 
+                    <code class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md">Name</code> | 
+                    <code class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md">ClassSection</code> | 
+                    <code class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md">Username</code> | 
+                    <code class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md">Password</code>
+                </p>
+
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <!-- File input ka 'name' attribute "file" hona zaroori hai -->
+                    <input type="file" name="file" 
+                           class="block w-full text-sm text-gray-500
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-lg file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-blue-50 file:text-blue-700
+                                  hover:file:bg-blue-100 transition duration-200" 
+                           accept=".xlsx" required>
+                    
+                    <button type="submit" 
+                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 w-full sm:w-auto shadow-md">
+                        Upload Students
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Other Actions Card -->
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-semibold mb-4 text-gray-700 border-b pb-3">Other Actions</h3>
+            <p class="text-gray-600">Links to manage teachers, view all results, etc., can be added here.</p>
+            <!-- (Yahan hum future mein 'Manage Teachers' ka button daal sakte hain) -->
+        </div>
+
+    </div> <!-- /container -->
+
+    <!-- Footer -->
+    <footer class="text-center py-6 mt-10 text-gray-500 text-sm">
+        &copy; 2025 SRMS Project. All rights reserved.
+    </footer>
+
+</body>
+</html>
+
